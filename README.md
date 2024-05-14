@@ -1,10 +1,10 @@
-# Project Name
+# Instagram Uploader Telegram Bot
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Description
 
-A brief description of your project.
+This bot is for uploading Instagram reels from links directly to your account, with tags and interesting facts. You can change tags and descriptions inside of a project itself (as for now)
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ A brief description of your project.
 To install the dependencies, run the following command:
 npm i
 
-Also you'll need .env file with your enviroment values:
+Also, you'll need a .env file with your environment values:
 
 IG_USERNAME: It's intended to store an Instagram username, but it needs to be filled in with an actual username (e.g. some_username).
 
@@ -25,7 +25,7 @@ IG_PASSWORD: It represents the password for an Instagram account (e.g. 123412SDa
 
 TELEGRAM_BOT_API_KEY: It appears to be an API key for a Telegram bot. You can get yours [here](https://t.me/BotFather) 
 
-MY_ACCOUNT_ID: This values is for testing only, your Telegram user ID to accept messages only from you. 
+MY_ACCOUNT_ID: This value is for testing only, your Telegram user ID accepts messages only from you. 
 
 GROQ_API: It's an API key or token for a service that uses the GROQ query language. GROQ is a query language commonly used with content management systems like Sanity.io.
 
