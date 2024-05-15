@@ -22,22 +22,25 @@ telegramBot.onText(/instagram.com\/reel/, async (msg) => {
 
     ig.state.generateDevice(process.env.IG_USERNAME);
     await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
-
+    
+    const photoLink = dataList[0].thumbnail_link;
+    const videoLink = dataList[0].download_link;
+    
     const author = await getInstagramReelAuthor(msg.text);
 
-    await telegramBot.sendMessage(msg.chat.id, `Downloading ${JSON.stringify(dataList)} files...`);
+    await telegramBot.sendMessage(msg.chat.id, `Downloading <a href="${photoLink}">cover image</a> and <a href="${videoLink}">video</a> files...`, {
+      parse_mode: 'HTML'
+    });
 
     const video = await get({
-      url: dataList[0].download_link,
+      url: videoLink,
       encoding: null, 
     });
 
     const coverImage = await get({
-      url: dataList[0].thumbnail_link,
+      url: photoLink,
       encoding: null, 
     });
-
-    await telegramBot.sendMessage(msg.chat.id, `Got files`);
 
     const groq = new Groq({
       apiKey: process.env.GROQ_API
@@ -53,13 +56,15 @@ telegramBot.onText(/instagram.com\/reel/, async (msg) => {
       model: "llama3-8b-8192"
     });
 
+    const caption = `${res?.choices[0]?.message?.content}\n\nStolen from: @${author}\n\n#MemeMonday #FunnyFridays #LOL #Humor #DailyLaughs #MemeMagic #ViralVibes #LaughOutLoud #ComedyGold #HilariousMoments #fyp #meme`;
+
     await ig.publish.video({
       video,
       coverImage,
-      caption: `${res?.choices[0]?.message?.content}\n\nStolen from: @${author}\n\n#MemeMonday #FunnyFridays #LOL #Humor #DailyLaughs #MemeMagic #ViralVibes #LaughOutLoud #ComedyGold #HilariousMoments #fyp #meme`,
+      caption,
     });
 
-    await telegramBot.sendMessage(msg.chat.id, `Files uploaded!`);
+    await telegramBot.sendMessage(msg.chat.id, `Files uploaded! With caption: \n ${caption}`);
   } else {
     telegramBot.sendMessage(msg.chat.id, `You are not allowed to use this bot.`);
   }
