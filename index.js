@@ -1,4 +1,4 @@
-import instagramDl  from '@sasmeee/igdl';
+import instagramDl from '@sasmeee/igdl';
 import dotenv from "dotenv";
 import Groq from 'groq-sdk';
 import { IgApiClient } from "instagram-private-api";
@@ -16,16 +16,16 @@ telegramBot.onText(/\/start/, (msg) => {
 });
 
 telegramBot.onText(/instagram.com\/reel/, async (msg) => {
-  if(msg.from.id == process.env.MY_ACCOUNT_ID) {
+  if (msg.from.id == process.env.MY_ACCOUNT_ID) {
     const dataList = await instagramDl(msg.text);
     const ig = new IgApiClient();
 
     ig.state.generateDevice(process.env.IG_USERNAME);
     await ig.account.login(process.env.IG_USERNAME, process.env.IG_PASSWORD);
-    
+
     const photoLink = dataList[0].thumbnail_link;
     const videoLink = dataList[0].download_link;
-    
+
     const author = await getInstagramReelAuthor(msg.text);
 
     await telegramBot.sendMessage(msg.chat.id, `Downloading <a href="${photoLink}">cover image</a> and <a href="${videoLink}">video</a> files...`, {
@@ -34,12 +34,12 @@ telegramBot.onText(/instagram.com\/reel/, async (msg) => {
 
     const video = await get({
       url: videoLink,
-      encoding: null, 
+      encoding: null,
     });
 
     const coverImage = await get({
       url: photoLink,
-      encoding: null, 
+      encoding: null,
     });
 
     const groq = new Groq({
@@ -48,10 +48,10 @@ telegramBot.onText(/instagram.com\/reel/, async (msg) => {
 
     const res = await groq.chat.completions.create({
       messages: [
-          {
-              role: "user",
-              content: "Generate one interesting fact about cars without any external message"
-          }
+        {
+          role: "user",
+          content: "Generate one interesting fact about cars without any external message"
+        }
       ],
       model: "llama3-8b-8192"
     });
@@ -72,31 +72,31 @@ telegramBot.onText(/instagram.com\/reel/, async (msg) => {
 
 async function getInstagramReelAuthor(reelUrl) {
   try {
-      const { data } = await axios.get(reelUrl);
+    const { data } = await axios.get(reelUrl);
 
-      // Extract the meta tag content
-      const metaTagRegex = /<meta property="og:description" content="([^"]+)"/;
-      const match = metaTagRegex.exec(data);
+    // Extract the meta tag content
+    const metaTagRegex = /<meta property="og:description" content="([^"]+)"/;
+    const match = metaTagRegex.exec(data);
 
-      if (match && match[1]) {
-          const content = match[1];
-          // Extract the username using regex
-          const usernameRegex = /- ([^ ]+) on/;
-          const usernameMatch = usernameRegex.exec(content);
+    if (match && match[1]) {
+      const content = match[1];
+      // Extract the username using regex
+      const usernameRegex = /- ([^ ]+) on/;
+      const usernameMatch = usernameRegex.exec(content);
 
-          if (usernameMatch && usernameMatch[1]) {
-              const username = usernameMatch[1].trim();
-              return username;
-          } else {
-              console.error('Username not found in the meta tag content');
-              return null;
-          }
+      if (usernameMatch && usernameMatch[1]) {
+        const username = usernameMatch[1].trim();
+        return username;
       } else {
-          console.error('Meta tag not found');
-          return null;
+        console.error('Username not found in the meta tag content');
+        return null;
       }
-  } catch (error) {
-      console.error('Error fetching the URL:', error.message);
+    } else {
+      console.error('Meta tag not found');
       return null;
+    }
+  } catch (error) {
+    console.error('Error fetching the URL:', error.message);
+    return null;
   }
 }
