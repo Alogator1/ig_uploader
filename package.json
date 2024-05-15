@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@sasmeee/igdl": "^1.0.0",
+    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "groq-sdk": "^0.3.3",
     "instagram-private-api": "^1.46.1",
